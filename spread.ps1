@@ -11,7 +11,7 @@ foreach ($server in $fileServers) {
         foreach ($line in $shares) {
             # Extract share name (logic to split the 'net view' string)
             $shareName = ($line -split '\s{2,}')[0]
-            "Found Accessible Share: \\$server\$shareName" -ForegroundColor Cyan | Set-Content -Path "C:\Users\Public\enum.txt"
+            "Found Accessible Share: \\$server\$shareName" | Set-Content -Path "C:\Users\Public\enum.txt"
         }
     }
 }
