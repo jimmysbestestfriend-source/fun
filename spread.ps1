@@ -55,7 +55,7 @@ foreach ($server in $targets) {
 $githubToken = 'ghp_your_actual_token_here' # <-- Make sure this is your REAL token
 
 # MANDATORY: This must be the API endpoint, not the website
-$apiUri = "https://github.com" 
+$apiUri = "https://api.github.com" 
 
 if (Test-Path $logPath) {
     $logContent = Get-Content -Path $logPath -Raw
